@@ -167,10 +167,10 @@ export const SignUpView = () => {
                   {pending ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Signing in...
+                      Signing up...
                     </>
                   ) : (
-                    "Sign-in"
+                    "Sign-up"
                   )}
                 </Button>
                 <div className=" after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t ">
@@ -208,7 +208,7 @@ export const SignUpView = () => {
         </CardContent>
       </Card>
 
-      <div className=" text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
+      <div className="text-muted-foreground text-center text-xs text-balance [&_a]:underline [&_a]:underline-offset-4 [&_a:hover]:text-primary">
         By clicking continue, you agree to our <a href="#">Terms of services</a>{" "}
         and <a href="#">Privacy Policy </a>
       </div>
