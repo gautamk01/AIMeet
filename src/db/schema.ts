@@ -1,4 +1,5 @@
 import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
+//authentication schema
 
 export const user = pgTable("user", {
   id: text('id').primaryKey(),
