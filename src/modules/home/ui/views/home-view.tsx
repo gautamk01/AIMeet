@@ -4,7 +4,7 @@ import { BouncingLoading } from "@/components/custom_ui/loadingCircle";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import { Router } from "next/router";
+
 export const HomeView = () => {
   const { data: session } = authClient.useSession();
   const router = useRouter();

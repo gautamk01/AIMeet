@@ -60,7 +60,7 @@ export const SignUpView = () => {
       },
       {
         onSuccess: () => {
-          setpending(true);
+          setpending(false);
           router.push("/");
         },
         onError: ({ error }) => {
