@@ -18,8 +18,9 @@ import {
 import { OctagonAlertIcon, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { FaGoogle, FaGithub } from "react-icons/fa";
 
 const formSchema = z
   .object({
@@ -59,7 +60,27 @@ export const SignUpView = () => {
       },
       {
         onSuccess: () => {
+          setpending(true);
           router.push("/");
+        },
+        onError: ({ error }) => {
+          setpending(false);
+          setError(error.message);
+        },
+      }
+    );
+  };
+  const OnSocial = async (provider: "github" | "google") => {
+    setError(null);
+    setpending(true);
+    const { error } = await authClient.signIn.social(
+      {
+        provider: provider,
+        callbackURL: "/",
+      },
+      {
+        onSuccess: () => {
+          setpending(false);
         },
         onError: ({ error }) => {
           setpending(false);
@@ -178,19 +199,36 @@ export const SignUpView = () => {
                     Or continue with
                   </span>
                 </div>
-                <div className=" grid grid-cols-2 gap-4">
-                  <Button variant="outline" type="button" className="w-full">
-                    Google
+
+                <div className=" grid grid-cols-2 gap-4  ">
+                  <Button
+                    disabled={pending}
+                    onClick={() => {
+                      OnSocial("google");
+                    }}
+                    variant="outline"
+                    type="button"
+                    className="w-full hover:cursor-pointer hover"
+                  >
+                    <FaGoogle /> Google
                   </Button>
-                  <Button variant="outline" type="button" className="w-full">
-                    Github
+                  <Button
+                    disabled={pending}
+                    onClick={() => {
+                      OnSocial("github");
+                    }}
+                    variant="outline"
+                    type="button"
+                    className="w-full hover:cursor-pointer hover"
+                  >
+                    <FaGithub /> Github
                   </Button>
                 </div>
                 <div className=" text-center text-sm">
                   Don't have an account ?{"  "}
                   <Link
                     href="/sign-in"
-                    className=" underline underline-offset-4"
+                    className=" underline underline-offset-4 "
                   >
                     Sign in
                   </Link>
