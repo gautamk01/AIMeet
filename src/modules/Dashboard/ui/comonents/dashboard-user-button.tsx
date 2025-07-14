@@ -49,7 +49,11 @@ export const DashboardUserButton = () => {
         ) : (
           <GeneratedAvatar
             seed={data.user.name}
+<<<<<<< HEAD
             variant="initals"
+=======
+            variant="initials"
+>>>>>>> 8f730a6 (I have some correction in th e06:dashboard)
             className="size-9 mr-3"
           />
         )}

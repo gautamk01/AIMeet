@@ -6,7 +6,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 interface GeneratedAvatarProps {
   seed: string;
   className?: string;
+<<<<<<< HEAD
   variant: "botttsNeutral" | "initals";
+=======
+  variant: "botttsNeutral" | "initials";
+>>>>>>> 8f730a6 (I have some correction in th e06:dashboard)
 }
 
 export const GeneratedAvatar = ({
