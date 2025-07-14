@@ -16,17 +16,19 @@ import { BotIcon, icons, StarIcon, VideoIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
+import { DashboardUserButton } from "./dashboard-user-button";
 // helps in dynamically add things with the classname
 const firstSection = [
   {
     icon: VideoIcon,
     label: "Meeting",
-    href: "/",
+    href: "/meetings",
   },
   {
     icon: BotIcon,
     label: "Agent",
-    href: "/meeting",
+    href: "/agents",
   },
 ];
 
@@ -39,6 +41,8 @@ const secondSection = [
 ];
 
 export const DashboardSidebar = () => {
+  const pathname = usePathname();
+  //default we have direct to the meeting by default
   return (
     <Sidebar>
       <SidebarHeader className="text-sidebar-accent-foreground">
@@ -56,9 +60,46 @@ export const DashboardSidebar = () => {
             <SidebarMenu>
               {firstSection.map((item) => (
                 <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton className={cn()}>
-                    <item.icon className=" size-5" />
+                  <SidebarMenuButton
+                    asChild
+                    className={cn(
+                      "h-10 hover:bg-linear-to-r/oklch border border-transparent hover:border-[#5D6B68]/10 from-sidebar-accent from-5% via-30% via-sidebar/50 to-side/50",
+                      pathname === item.href &&
+                        " bg-linear-to-r/oklab border-[#5D6B68]/10"
+                    )}
+                    isActive={pathname === item.href}
+                  >
                     <Link href={item.href}>
+                      <item.icon className=" size-5" />
+                      <span className="text-sm font-medium tracking-tight">
+                        {item.label}
+                      </span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <div className="px-4 py-2">
+          <Separator className=" opacity-10 text-[#5D6B68]" />
+        </div>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {secondSection.map((item) => (
+                <SidebarMenuItem key={item.href}>
+                  <SidebarMenuButton
+                    asChild
+                    className={cn(
+                      "h-10 hover:bg-linear-to-r/oklch border border-transparent hover:border-[#5D6B68]/10 from-sidebar-accent from-5% via-30% via-sidebar/50 to-side/50",
+                      pathname === item.href &&
+                        " bg-linear-to-r/oklab border-[#5D6B68]/10"
+                    )}
+                    isActive={pathname === item.href}
+                  >
+                    <Link href={item.href}>
+                      <item.icon className=" size-5" />
                       <span className="text-sm font-medium tracking-tight">
                         {item.label}
                       </span>
@@ -70,6 +111,9 @@ export const DashboardSidebar = () => {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter className=" text-white">
+        <DashboardUserButton />
+      </SidebarFooter>
     </Sidebar>
   );
 };
