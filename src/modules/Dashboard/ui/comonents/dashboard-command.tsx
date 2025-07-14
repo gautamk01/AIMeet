@@ -2,8 +2,8 @@ import {
   CommandDialog,
   CommandInput,
   CommandList,
+  CommandItem,
 } from "@/components/ui/command";
-import { CommandItem } from "cmdk";
 import { Dispatch, SetStateAction } from "react";
 
 interface Props {

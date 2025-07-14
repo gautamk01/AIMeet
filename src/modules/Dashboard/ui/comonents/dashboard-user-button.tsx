@@ -28,7 +28,7 @@ import { Button } from "@/components/ui/button";
 export const DashboardUserButton = () => {
   const { data, isPending } = authClient.useSession();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const isMobil = useIsMobile();
+  const isMobile = useIsMobile();
 
   const router = useRouter();
   const onlogout = () => {
@@ -48,7 +48,7 @@ export const DashboardUserButton = () => {
   if (isPending || !data?.user) {
     return null;
   }
-  if (isMobil) {
+  if (isMobile) {
     return (
       <Drawer>
         <DrawerTrigger className="rounded-lg border border-border/10 p-3 w-full flex items-center justify-between bg-white/5 hover:bg-white/10 overflow-hidden gap-x-2">
@@ -72,7 +72,7 @@ export const DashboardUserButton = () => {
         <DrawerContent>
           <DrawerHeader>
             <DrawerTitle>{data.user.name}</DrawerTitle>
-            <DrawerTitle>{data.user.email}</DrawerTitle>
+            <p className="text-sm text-muted-foreground">{data.user.email}</p>
           </DrawerHeader>
           <DrawerFooter>
             <Button variant="outline" onClick={() => {}}>
