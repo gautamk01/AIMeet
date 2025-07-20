@@ -8,8 +8,8 @@ export const agentRouter = createTRPCRouter({
     getMany: baseProcedure.query(async () => {
         const data = await db
             .select().from(agents)
-
-        throw new TRPCError({ code: "BAD_REQUEST" })
         return data
     })
+
+
 })
