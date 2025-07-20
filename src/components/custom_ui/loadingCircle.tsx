@@ -42,7 +42,7 @@ export const BouncingLoading: React.FC<BouncingLoadingProps> = ({
   }, [bounceHeight, duration]);
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
+    <div className=" flex items-center justify-center ">
       <div ref={containerRef} className="flex items-end space-x-2">
         {Array.from({ length: dotCount }, (_, i) => (
           <div
