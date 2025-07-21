@@ -6,7 +6,6 @@ import {
 } from "@/modules/agents/ui/views/agent-view";
 import { getQueryClient, trpc } from "@/trpc/server";
 import { Suspense } from "react";
-import { LoadingState } from "@/components/custom_ui/loading-state";
 import { ErrorBoundary } from "react-error-boundary";
 
 const Page = () => {

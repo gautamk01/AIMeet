@@ -3,11 +3,7 @@
 import { ErrorState } from "@/components/custom_ui/error-state";
 import { LoadingState } from "@/components/custom_ui/loading-state";
 import { useTRPC } from "@/trpc/client";
-import {
-  useQuery,
-  useSuspenseQueries,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
 export const AgentsView = () => {
   const trpc = useTRPC();
