@@ -1,100 +1,134 @@
-# Meet AI 🤖💬
+# Meet AI
 
-> **The future of video calling is here!** Meet AI transforms ordinary video calls into intelligent, interactive experiences powered by specialized AI agents.
+AI-powered video calling platform with specialized AI agents for tutoring, coaching, and professional development.
 
-## 🚀 What is Meet AI?
+## Features
 
-Meet AI isn't just another video calling app – it's your personal AI-powered meeting companion! Imagine having a conversation with a language tutor, getting coached by a startup mentor, or practicing interviews with an AI that actually understands and responds in real-time. That's exactly what Meet AI delivers!
+- Real-time video calls with AI agents
+- Role-specific AI companions (tutors, coaches, mentors)
+- Automatic meeting transcription and analysis
+- Multi-device responsive design
+- SaaS subscription management
 
-## 🎯 Project Objectives & Goals
+## Tech Stack
 
-### Our Mission
-To revolutionize virtual meetings by making them more productive, engaging, and tailored to specific needs through intelligent AI agents.
+- **Frontend**: Next.js 15, React 19, Tailwind CSS v4, Shadcn UI
+- **Backend**: tRPC, TanStack Query
+- **Database**: PostgreSQL (Neon) with Drizzle ORM
+- **AI**: OpenAI Realtime API
+- **Video**: Stream SDK
+- **Auth**: Better Auth
+- **Payments**: Polar
 
-### Key Goals
-- **🎭 Role-Specific AI Agents**: Create AI companions trained for specific purposes (tutors, coaches, assistants)
-- **⚡ Real-Time Interaction**: Enable seamless, natural conversations with AI during live video calls
-- **🔍 Smart Post-Meeting Analysis**: Automatically generate summaries, transcripts, and insights
-- **📱 Universal Access**: Provide a responsive experience across all devices
-- **💰 Sustainable Business**: Build a complete SaaS platform with subscription management
+## Prerequisites
 
-## 🤔 The Problem We're Solving
+- Node.js 18+
+- PostgreSQL database
+- OpenAI API key
+- Stream API credentials
 
-### Current Pain Points
-- **Generic Video Calls**: Traditional platforms offer basic communication without specialized assistance
-- **Missed Learning Opportunities**: Language learners, job seekers, and entrepreneurs lack accessible, on-demand expert guidance
-- **Poor Meeting Follow-up**: Important discussions get lost without proper documentation and analysis
-- **One-Size-Fits-All**: No personalization for specific use cases or professional needs
+## Quick Start
 
-### Our Solution
-Meet AI bridges the gap between human expertise and AI efficiency, providing:
-- **Instant Access** to specialized knowledge and coaching
-- **24/7 Availability** for practice and learning sessions
-- **Intelligent Documentation** that captures and analyzes every conversation
-- **Personalized Experiences** tailored to individual goals and needs
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd meet-ai
+   ```
 
-## 🌍 Real-World Use Cases
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-### 🎓 Education & Learning
-- **Language Tutoring**: Practice conversations with native-level AI tutors in multiple languages
-- **Skill Development**: Get coding mentorship, writing feedback, or presentation coaching
-- **Academic Support**: Study sessions with AI teaching assistants for various subjects
+3. **Environment setup**
+   ```bash
+   cp .env.example .env.local
+   ```
+   
+   Configure required environment variables:
+   ```env
+   DATABASE_URL=your_postgres_url
+   OPENAI_API_KEY=your_openai_key
+   STREAM_API_KEY=your_stream_key
+   STREAM_SECRET=your_stream_secret
+   BETTER_AUTH_SECRET=your_auth_secret
+   POLAR_ACCESS_TOKEN=your_polar_token
+   ```
 
-### 💼 Professional Development
-- **Interview Preparation**: Mock interviews with AI recruiters for different industries
-- **Sales Training**: Role-play scenarios with AI prospects to improve closing techniques
-- **Leadership Coaching**: Strategic discussions with AI executive coaches
+4. **Database setup**
+   ```bash
+   npm run db:push
+   npm run db:seed
+   ```
 
-### 🚀 Entrepreneurship
-- **Startup Mentoring**: Pitch practice and business strategy sessions with AI advisors
-- **Investor Prep**: Simulate investor meetings and get feedback on your pitch deck
-- **Market Research**: Brainstorm and validate ideas with industry-specific AI experts
+5. **Start development server**
+   ```bash
+   npm run dev
+   ```
 
-### 🏥 Healthcare & Wellness
-- **Mental Health Support**: Therapeutic conversations with AI wellness coaches
-- **Fitness Coaching**: Personalized workout planning and motivation sessions
-- **Medical Practice**: Training scenarios for medical students and professionals
+Visit `http://localhost:3000` to see the application.
 
-### 🎨 Creative Industries
-- **Creative Feedback**: Get critiques on art, writing, or design projects
-- **Brainstorming Sessions**: Generate ideas with AI creative partners
-- **Performance Coaching**: Acting, music, or public speaking improvement
+## Available Scripts
 
-## 🛠️ Tech Stack
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Run ESLint
+npm run type-check   # Run TypeScript checks
+npm run db:push      # Push database schema
+npm run db:studio    # Open Drizzle Studio
+```
 
-We're building with cutting-edge technologies:
+## Project Structure
 
-- **Frontend**: Next.js 15 + React 19 for lightning-fast user experience
-- **Backend**: tRPC + TanStack Query for type-safe, efficient API communication
-- **Database**: Drizzle ORM + PostgreSQL (Neon) for robust data management
-- **AI Integration**: OpenAI Realtime API for intelligent conversations
-- **Video & Chat**: Stream SDK for professional-grade communication
-- **Styling**: Tailwind CSS v4 + Shadcn UI for beautiful, accessible design
-- **Authentication**: Better Auth for secure user management
-- **Payments**: Polar for seamless subscription handling
+```
+├── src/
+│   ├── app/             # Next.js app directory
+│   ├── components/      # Reusable UI components
+│   ├── lib/            # Utilities and configurations
+│   ├── server/         # tRPC server and database
+│   └── types/          # TypeScript type definitions
+├── public/             # Static assets
+└── drizzle/           # Database migrations
+```
 
-## 🎯 Why This Matters
+## API Endpoints
 
-In a world where remote work and digital learning are becoming the norm, Meet AI represents the next evolution of virtual collaboration. We're not just building an app – we're creating a platform that:
+- `/api/trpc/*` - tRPC API routes
+- `/api/auth/*` - Authentication endpoints
+- `/api/webhooks/*` - Webhook handlers
 
-- **Democratizes Expertise**: Makes high-quality coaching and tutoring accessible to everyone
-- **Enhances Productivity**: Turns every meeting into a learning and growth opportunity
-- **Bridges Communication Gaps**: Provides instant, intelligent assistance for any conversation
-- **Scales Human Knowledge**: Leverages AI to make expert-level guidance available 24/7
+## Development
 
-## 🚀 Getting Started
+### Adding New AI Agents
 
-Ready to dive in? This project follows a comprehensive tutorial approach where each chapter builds upon the previous one. By the end, you'll have a complete, production-ready SaaS application that showcases modern full-stack development with AI integration.
+1. Create agent configuration in `src/lib/ai-agents/`
+2. Add agent type to `src/types/agents.ts`
+3. Update agent selector component
 
-**What You'll Learn:**
-- Advanced React & Next.js patterns
-- Real-time AI integration
-- Video calling infrastructure
-- SaaS business model implementation
-- Production deployment strategies
+### Database Changes
 
-*Let's build the future of intelligent video communication together! 🌟*
+```bash
+npm run db:generate    # Generate migration
+npm run db:push        # Apply changes
+```
 
-## 📄 License
+### Testing AI Features
 
-This project is part of a learning tutorial and is intended for educational purposes.
+Use the built-in test suite or connect to OpenAI Realtime API playground for debugging.
+
+## Deployment
+
+### Vercel (Recommended)
+
+1. Connect your repository to Vercel
+2. Configure environment variables
+3. Deploy automatically on push
+
+### Manual Deployment
+
+```bash
+npm run build
+npm run start
+```
