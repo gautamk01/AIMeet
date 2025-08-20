@@ -8,6 +8,7 @@ import { getQueryClient, trpc } from "@/trpc/server";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
+//what if we fecth the data from the db to the server
 const Page = () => {
   //prefect the data
   const queryClient = getQueryClient();
