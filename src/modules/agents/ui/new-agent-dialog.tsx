@@ -1,3 +1,5 @@
+"use client";
+
 import { ResponsiveDialog } from "@/components/custom_ui/responsive-dialog";
 import { AgentForm } from "./components/agent-form";
 
