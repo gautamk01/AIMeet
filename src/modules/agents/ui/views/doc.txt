@@ -87,3 +87,11 @@ This is a practical, real-world issue that the instructor addresses.
     1.  Don't panic. It's a known issue that seems to happen mostly in development and doesn't typically break the application.
     2.  Don't spam the GitHub issue unless you have new, insightful information.
     3.  If it's critical to fix, you can either downgrade TanStack Query to a version before the bug was introduced (like `5.6.3`) or try the pre-release version mentioned in the issue.
+
+
+
+    Chapter 13 
+
+    there is a issues , not an issue but authentication error which means
+    when a the browser is prefetchs the things then the user also needed to give the same as prefetch if not so then it will create an issue 
+    

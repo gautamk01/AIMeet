@@ -9,12 +9,12 @@ import { columns } from "../components/columns";
 import { EmptyState } from "@/components/custom_ui/Empty_state";
 export const AgentsView = () => {
   const trpc = useTRPC();
-  const { data } = useSuspenseQuery(trpc.agents.getMany.queryOptions());
+  const { data } = useSuspenseQuery(trpc.agents.getMany.queryOptions({}));
 
   return (
     <div>
-      <DataTable data={data} columns={columns} />
-      {data.length === 0 && (
+      <DataTable data={data.items} columns={columns} />
+      {data.items.length === 0 && (
         <EmptyState
           title="Create your first agent"
           description="Create an agent to join your meeting , each meeting "
