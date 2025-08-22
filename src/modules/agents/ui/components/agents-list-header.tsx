@@ -4,7 +4,7 @@ import { PlusIcon, XCircle } from "lucide-react";
 import { NewAgentDialog } from "./new-agent-dialog";
 import { useState } from "react";
 import { useAgentsFilters } from "../../hooks/use-agents-filters";
-import { SearchFilter } from "./agent-search-filter";
+import { AgentSearchFilter } from "./agent-search-filter";
 import { DEFAULT_PAGE } from "@/constants";
 
 export const AgentsListHeader = () => {
@@ -31,7 +31,7 @@ export const AgentsListHeader = () => {
           </Button>
         </div>
         <div className=" flex items-center gap-x-2 p-1">
-          <SearchFilter />
+          <AgentSearchFilter />
           {isAnyFilterModified && (
             <Button variant="outline" size="sm" onClick={onclearFilter}>
               <XCircle />
