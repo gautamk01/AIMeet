@@ -1,3 +1,4 @@
+"use client ";
 import { Input } from "@/components/ui/input";
 import { SearchIcon } from "lucide-react";
 import { useAgentsFilters } from "../../hooks/use-agents-filters";
@@ -12,7 +13,7 @@ export const AgentSearchFilter = () => {
         value={filter.search}
         onChange={(e) => setfilter({ search: e.target.value })}
       />
-      <SearchIcon className=" size-4 absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
+      <SearchIcon className="size-4 absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
     </div>
   );
 };

@@ -22,7 +22,7 @@ export const agentRouter = createTRPCRouter({
     //we have added some fileter options and it is optional 
     getMany: protectedProcedure.input(
         z.object({
-            page: z.number().default(DEFAULT_PAGE),
+            page: z.number().int().min(DEFAULT_PAGE).default(DEFAULT_PAGE),
             pageSize: z.number().min(MIN_PAGE_SIZE).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE),
             search: z.string().nullish()
         })
