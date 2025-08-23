@@ -11,6 +11,7 @@ import { MeetingGetOne } from "../../types";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -23,6 +24,7 @@ import { toast } from "sonner";
 import { meetingsInsertSchema } from "../../schemas";
 import { use, useState } from "react";
 import { CommandSelect } from "@/components/custom_ui/command-select";
+import { NewAgentDialog } from "@/modules/agents/ui/components/new-agent-dialog";
 
 interface MeetingFormProps {
   onSuccess?: (id?: string) => void;
@@ -38,7 +40,7 @@ export const MeetingForm = ({
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
-  const [open, setOpen] = useState(false);
+  const [openNewAgentDialog, setOpenNewAgentDialog] = useState(false);
   const [agentSearch, setAgentSearch] = useState("");
 
   //loading All agents
@@ -116,72 +118,89 @@ export const MeetingForm = ({
   };
 
   return (
-    <Form {...form}>
-      <form className=" space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-        <FormField
-          name="name"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Name</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder="g. Math Consultation" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          name="agentId"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Agent</FormLabel>
-              <FormControl>
-                <CommandSelect
-                  options={(agents.data?.items ?? []).map((agent) => ({
-                    id: agent.id,
-                    value: agent.id,
-                    children: (
-                      <div className=" flex items-center gap-x-2">
-                        <GeneratedAvatar
-                          variant="botttsNeutral"
-                          seed={agent.name}
-                          className="size-6"
-                        />
-                        <span className=" font-semibold capitalize">
-                          {agent.name}
-                        </span>
-                      </div>
-                    ),
-                  }))}
-                  onSelect={field.onChange}
-                  onSearch={setAgentSearch}
-                  value={field.value}
-                  placeholder="Select an Agent"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <>
+      {/* This able a use to directly create an agent within in the meeting form */}
+      <NewAgentDialog
+        open={openNewAgentDialog}
+        onOpenChange={setOpenNewAgentDialog}
+      />
+      <Form {...form}>
+        <form className=" space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+          <FormField
+            name="name"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="g. Math Consultation" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="agentId"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Agent</FormLabel>
+                <FormControl>
+                  <CommandSelect
+                    options={(agents.data?.items ?? []).map((agent) => ({
+                      id: agent.id,
+                      value: agent.id,
+                      children: (
+                        <div className=" flex items-center gap-x-2">
+                          <GeneratedAvatar
+                            variant="botttsNeutral"
+                            seed={agent.name}
+                            className="size-6"
+                          />
+                          <span className=" font-semibold capitalize">
+                            {agent.name}
+                          </span>
+                        </div>
+                      ),
+                    }))}
+                    onSelect={field.onChange}
+                    onSearch={setAgentSearch}
+                    value={field.value}
+                    placeholder="Select an Agent"
+                  />
+                </FormControl>
+                <FormDescription>
+                  Not found what you&apos;re looking for?{" "}
+                  <button
+                    type="button"
+                    className=" text-primary hover:underline"
+                    onClick={() => setOpenNewAgentDialog(true)}
+                  >
+                    Creat a new Agent
+                  </button>
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <div className=" flex justify-between gap-x-2">
-          {onCancel && (
-            <Button
-              variant="ghost"
-              disabled={isPending}
-              onClick={() => onCancel()}
-              type="button"
-            >
-              Cancel
+          <div className=" flex justify-between gap-x-2">
+            {onCancel && (
+              <Button
+                variant="ghost"
+                disabled={isPending}
+                onClick={() => onCancel()}
+                type="button"
+              >
+                Cancel
+              </Button>
+            )}
+            <Button disabled={isPending} type="submit">
+              {isEdit ? "Update Meeting" : "Create Meeting"}
             </Button>
-          )}
-          <Button disabled={isPending} type="submit">
-            {isEdit ? "Update Meeting" : "Create Meeting"}
-          </Button>
-        </div>
-      </form>
-    </Form>
+          </div>
+        </form>
+      </Form>
+    </>
   );
 };
