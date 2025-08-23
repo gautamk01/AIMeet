@@ -26,13 +26,13 @@ import { toast } from "sonner";
 interface AgentFormProps {
   onSuccess?: () => void;
   onCancel?: () => void;
-  initalValues?: any;
+  initialValues?: any;
 }
 
 export const AgentForm = ({
   onSuccess,
   onCancel,
-  initalValues,
+  initialValues,
 }: AgentFormProps) => {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -41,15 +41,15 @@ export const AgentForm = ({
   //we have to immediately show the agent
   // This moment we can see the power of prefectch
 
+  //invalidateQueries = This cached data may now be stale — please refetch it the next time it’s used (or immediately if it’s active).”
   const createAgent = useMutation(
     trpc.agents.create.mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries(trpc.agents.getMany.queryOptions({}));
-        if (initalValues?.id) {
-          queryClient.invalidateQueries(
-            trpc.agents.getOne.queryOptions({ id: initalValues?.id })
-          );
-        }
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(
+          trpc.agents.getMany.queryOptions({})
+        );
+
+        //todo : invalidate free tire usage
 
         toast.success("Agent Created");
         //close it
@@ -63,20 +63,44 @@ export const AgentForm = ({
     })
   );
 
+  const updateAgent = useMutation(
+    trpc.agents.update.mutationOptions({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(
+          trpc.agents.getMany.queryOptions({})
+        );
+        if (initialValues?.id) {
+          queryClient.invalidateQueries(
+            trpc.agents.getOne.queryOptions({ id: initialValues?.id })
+          );
+        }
+
+        toast.success("Updated the Agent ");
+        //close it
+        onSuccess?.();
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+
+      //todo: check if error code is "forbiden", redirect to '/upgrade'
+    })
+  );
+
   const form = useForm<z.infer<typeof agentsInsertSchema>>({
     resolver: zodResolver(agentsInsertSchema),
     defaultValues: {
-      name: initalValues?.name ?? "",
-      instructions: initalValues?.instructions ?? "",
+      name: initialValues?.name ?? "",
+      instructions: initialValues?.instructions ?? "",
     },
   });
 
-  const isEdit = !!initalValues?.id;
-  const isPending = createAgent.isPending;
+  const isEdit = !!initialValues?.id;
+  const isPending = createAgent.isPending || updateAgent.isPending;
 
   const onSubmit = (values: z.infer<typeof agentsInsertSchema>) => {
     if (isEdit) {
-      console.log("TODO :update Agent");
+      updateAgent.mutate({ ...values, id: initialValues?.id });
     } else {
       createAgent.mutate(values);
     }
