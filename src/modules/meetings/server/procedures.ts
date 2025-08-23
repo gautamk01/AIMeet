@@ -5,9 +5,18 @@ import { z } from "zod";
 import { and, count, desc, eq, getTableColumns, ilike, sql } from "drizzle-orm";
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, MIN_PAGE_SIZE } from "@/constants";
 import { TRPCError } from "@trpc/server";
+import { meetingsInsertSchema } from "../schemas";
 
 
 export const meetingsRouter = createTRPCRouter({
+
+
+    create: protectedProcedure.input(meetingsInsertSchema).mutation(async ({ input, ctx }) => {
+        const [createdMeetings] = await db.insert(meetings).values({ ...input, userId: ctx.auth.user.id }).returning();
+
+        //TODO : create stream call , upsert Stream user
+        return createdMeetings;
+    }),
 
     //from this we are getting the inital values the update form will be populated with 
     getOne: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ input, ctx }) => {
