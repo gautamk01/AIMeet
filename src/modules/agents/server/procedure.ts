@@ -5,15 +5,21 @@ import { agentsInsertSchema } from "../schema";
 import { z } from "zod";
 import { and, count, desc, eq, getTableColumns, ilike, sql } from "drizzle-orm";
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, MIN_PAGE_SIZE } from "@/constants";
+import { TRPCError } from "@trpc/server";
 
 
 export const agentRouter = createTRPCRouter({
 
     //from this we are getting the inital values the update form will be populated with 
-    getOne: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
+    getOne: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ input, ctx }) => {
         const [existingAgent] = await db.select({
             meetingCount: sql<number>`5`, ...getTableColumns(agents)
-        }).from(agents).where(eq(agents.id, input.id))
+        }).from(agents).where(and(eq(agents.id, input.id), eq(agents.userId, ctx.auth.user.id)))
+        //Find the agent with this specific ID, but only return it if it belongs to this specific user." 
+        //This prevents any user from being able to access another user's data, even if they guess a valid agent ID. 🔐
+        if (!existingAgent) {
+            throw new TRPCError({ code: "NOT_FOUND", message: "Agent not found" })
+        }
         return existingAgent;
     }),
 
