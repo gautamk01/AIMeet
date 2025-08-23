@@ -22,11 +22,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { AgentGetOne } from "../../types";
 
 interface AgentFormProps {
   onSuccess?: () => void;
   onCancel?: () => void;
-  initialValues?: any;
+  initialValues?: AgentGetOne;
 }
 
 export const AgentForm = ({

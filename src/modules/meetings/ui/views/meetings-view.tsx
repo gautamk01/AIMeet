@@ -4,12 +4,17 @@ import { LoadingState } from "@/components/custom_ui/loading-state";
 import { useTRPC } from "@/trpc/client";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import React from "react";
+import DataView from "./data";
 
 const MeetingsView = () => {
   const trpc = useTRPC();
   const { data } = useSuspenseQuery(trpc.meetings.getMany.queryOptions({}));
 
-  return <div>{JSON.stringify(data)}</div>;
+  return (
+    <div>
+      <DataView data={data} />
+    </div>
+  );
 };
 
 export const MeetingViewLoading = () => {
