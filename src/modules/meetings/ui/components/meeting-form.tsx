@@ -4,37 +4,35 @@ import { useTRPC } from "@/trpc/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { agentsInsertSchema } from "../../schema";
+meetingsInsertSchema;
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { MeetingGetOne } from "../../types";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { GeneratedAvatar } from "@/components/custom_ui/generated-avatar";
-import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { AgentGetOne } from "../../types";
+import { meetingsInsertSchema } from "../../schemas";
 
-interface AgentFormProps {
-  onSuccess?: () => void;
+interface MeetingFormProps {
+  onSuccess?: (id?: string) => void;
   onCancel?: () => void;
-  initialValues?: AgentGetOne;
+  initialValues?: MeetingGetOne;
 }
 
-export const AgentForm = ({
+export const MeetingForm = ({
   onSuccess,
   onCancel,
   initialValues,
-}: AgentFormProps) => {
+}: MeetingFormProps) => {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
@@ -43,18 +41,18 @@ export const AgentForm = ({
   // This moment we can see the power of prefectch
 
   //invalidateQueries = This cached data may now be stale — please refetch it the next time it’s used (or immediately if it’s active).”
-  const createAgent = useMutation(
-    trpc.agents.create.mutationOptions({
-      onSuccess: async () => {
+  const createMeeting = useMutation(
+    trpc.meetings.create.mutationOptions({
+      onSuccess: async (data) => {
         await queryClient.invalidateQueries(
-          trpc.agents.getMany.queryOptions({})
+          trpc.meetings.getMany.queryOptions({})
         );
 
         //todo : invalidate free tire usage
 
-        toast.success("Agent Created");
+        toast.success("Meeting is Created");
         //close it
-        onSuccess?.();
+        onSuccess?.(data.id);
       },
       onError: (error) => {
         toast.error(error.message);
@@ -64,19 +62,19 @@ export const AgentForm = ({
     })
   );
 
-  const updateAgent = useMutation(
-    trpc.agents.update.mutationOptions({
+  const updateMeeting = useMutation(
+    trpc.meetings.update.mutationOptions({
       onSuccess: async () => {
         await queryClient.invalidateQueries(
-          trpc.agents.getMany.queryOptions({})
+          trpc.meetings.getMany.queryOptions({})
         );
         if (initialValues?.id) {
           queryClient.invalidateQueries(
-            trpc.agents.getOne.queryOptions({ id: initialValues?.id })
+            trpc.meetings.getOne.queryOptions({ id: initialValues?.id })
           );
         }
 
-        toast.success("Updated the Agent ");
+        toast.success("Updated the Meeting ");
         //close it
         onSuccess?.();
       },
@@ -88,33 +86,28 @@ export const AgentForm = ({
     })
   );
 
-  const form = useForm<z.infer<typeof agentsInsertSchema>>({
-    resolver: zodResolver(agentsInsertSchema),
+  const form = useForm<z.infer<typeof meetingsInsertSchema>>({
+    resolver: zodResolver(meetingsInsertSchema),
     defaultValues: {
       name: initialValues?.name ?? "",
-      instructions: initialValues?.instructions ?? "",
+      agentId: initialValues?.agentId ?? "",
     },
   });
 
   const isEdit = !!initialValues?.id;
-  const isPending = createAgent.isPending || updateAgent.isPending;
+  const isPending = createMeeting.isPending || updateMeeting.isPending;
 
-  const onSubmit = (values: z.infer<typeof agentsInsertSchema>) => {
+  const onSubmit = (values: z.infer<typeof meetingsInsertSchema>) => {
     if (isEdit) {
-      updateAgent.mutate({ ...values, id: initialValues?.id });
+      updateMeeting.mutate({ ...values, id: initialValues?.id });
     } else {
-      createAgent.mutate(values);
+      createMeeting.mutate(values);
     }
   };
 
   return (
     <Form {...form}>
       <form className=" space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-        <GeneratedAvatar
-          seed={form.watch("name")}
-          variant="botttsNeutral"
-          className=" border size-16"
-        />
         <FormField
           name="name"
           control={form.control}
@@ -122,28 +115,13 @@ export const AgentForm = ({
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="eg. Math tutor" />
+                <Input {...field} placeholder="g. Math Consultation" />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <FormField
-          name="instructions"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Name</FormLabel>
-              <FormControl>
-                <Textarea
-                  {...field}
-                  placeholder="you are a helpful math assistant that can answer question and help with assignments "
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+
         <div className=" flex justify-between gap-x-2">
           {onCancel && (
             <Button

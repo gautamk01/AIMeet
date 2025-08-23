@@ -5,12 +5,23 @@ import { z } from "zod";
 import { and, count, desc, eq, getTableColumns, ilike, sql } from "drizzle-orm";
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, MIN_PAGE_SIZE } from "@/constants";
 import { TRPCError } from "@trpc/server";
-import { meetingsInsertSchema } from "../schemas";
+import { meetingsInsertSchema, meetingsUpdateSchema } from "../schemas";
 
 
 export const meetingsRouter = createTRPCRouter({
 
+    //update Meeting Procedure 
+    update: protectedProcedure.input(meetingsUpdateSchema).mutation(async ({ ctx, input }) => {
+        const [updateMeeting] = await db.update(meetings).set(input).where(and(eq(meetings.id, input.id), eq(meetings.userId, ctx.auth.user.id))).returning();
+        if (!updateMeeting) {
+            throw new TRPCError({ code: "NOT_FOUND", message: "Update Meeting not found" })
+        }
 
+        return updateMeeting;
+    }),
+
+
+    //Create Meeting Procedure 
     create: protectedProcedure.input(meetingsInsertSchema).mutation(async ({ input, ctx }) => {
         const [createdMeetings] = await db.insert(meetings).values({ ...input, userId: ctx.auth.user.id }).returning();
 
@@ -18,6 +29,7 @@ export const meetingsRouter = createTRPCRouter({
         return createdMeetings;
     }),
 
+    //Getone Meeting Procedure
     //from this we are getting the inital values the update form will be populated with 
     getOne: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ input, ctx }) => {
         const [existingMeeting] = await db.select({
@@ -32,6 +44,7 @@ export const meetingsRouter = createTRPCRouter({
     }),
 
 
+    //Get all meeting procedure
     //TODO: protected procedure needed to be setup
     //we have added some fileter options and it is optional 
     getMany: protectedProcedure.input(
