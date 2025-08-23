@@ -21,6 +21,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { meetingsInsertSchema } from "../../schemas";
+import { use, useState } from "react";
+import { CommandSelect } from "@/components/custom_ui/command-select";
 
 interface MeetingFormProps {
   onSuccess?: (id?: string) => void;
@@ -35,6 +37,14 @@ export const MeetingForm = ({
 }: MeetingFormProps) => {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
+
+  const [open, setOpen] = useState(false);
+  const [agentSearch, setAgentSearch] = useState("");
+
+  //loading All agents
+  const agents = useQuery(
+    trpc.agents.getMany.queryOptions({ pageSize: 100, search: agentSearch })
+  );
 
   //when on success happends we will invalidate  when we create the agent
   //we have to immediately show the agent
@@ -121,6 +131,40 @@ export const MeetingForm = ({
             </FormItem>
           )}
         />
+        <FormField
+          name="agentId"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Agent</FormLabel>
+              <FormControl>
+                <CommandSelect
+                  options={(agents.data?.items ?? []).map((agent) => ({
+                    id: agent.id,
+                    value: agent.id,
+                    children: (
+                      <div className=" flex items-center gap-x-2">
+                        <GeneratedAvatar
+                          variant="botttsNeutral"
+                          seed={agent.name}
+                          className="size-6"
+                        />
+                        <span className=" font-semibold capitalize">
+                          {agent.name}
+                        </span>
+                      </div>
+                    ),
+                  }))}
+                  onSelect={field.onChange}
+                  onSearch={setAgentSearch}
+                  value={field.value}
+                  placeholder="Select an Agent"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <div className=" flex justify-between gap-x-2">
           {onCancel && (
@@ -134,7 +178,7 @@ export const MeetingForm = ({
             </Button>
           )}
           <Button disabled={isPending} type="submit">
-            {isEdit ? "Update Agent" : "Create Agent"}
+            {isEdit ? "Update Meeting" : "Create Meeting"}
           </Button>
         </div>
       </form>
