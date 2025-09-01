@@ -1,5 +1,9 @@
 import { auth } from "@/lib/auth";
-import { MeetingIdView } from "@/modules/meetings/ui/views/meeting-id-view";
+import {
+  MeetingIdView,
+  MeetingIdViewError,
+  MeetingIdViewLoading,
+} from "@/modules/meetings/ui/views/meeting-id-view";
 import { getQueryClient, trpc } from "@/trpc/server";
 import { HydrationBoundary } from "@tanstack/react-query";
 
@@ -29,8 +33,8 @@ const Page = async ({ params }: Props) => {
   //Todo : Prefetch 'meeting.getTranscript'
   return (
     <HydrationBoundary>
-      <Suspense fallback={<p>Todo</p>}>
-        <ErrorBoundary fallback={<p>Todo</p>}>
+      <Suspense fallback={<MeetingIdViewLoading />}>
+        <ErrorBoundary fallback={<MeetingIdViewError />}>
           <MeetingIdView meetingId={meetingId} />
         </ErrorBoundary>
       </Suspense>
