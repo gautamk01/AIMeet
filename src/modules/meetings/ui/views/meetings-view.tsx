@@ -8,10 +8,17 @@ import DataView from "./data";
 import { DataTable } from "@/components/custom_ui/data-table";
 import { columns } from "../components/columns";
 import { EmptyState } from "@/components/custom_ui/Empty_state";
+import { useRouter } from "next/navigation";
+import { useMeetingFilters } from "../../hooks/use-meetings-filters";
 
 const MeetingsView = () => {
   const trpc = useTRPC();
-  const { data } = useSuspenseQuery(trpc.meetings.getMany.queryOptions({}));
+  const router = useRouter();
+  const [filter, setFilter] = useMeetingFilters();
+
+  const { data } = useSuspenseQuery(
+    trpc.meetings.getMany.queryOptions({ ...filter })
+  );
 
   return (
     <div className=" flex-1 pb-4 px-4 md:px-8 flex flex-col gap-y-4">
