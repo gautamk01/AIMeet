@@ -4,7 +4,6 @@ import { ErrorState } from "@/components/custom_ui/error-state";
 import { LoadingState } from "@/components/custom_ui/loading-state";
 import { useTRPC } from "@/trpc/client";
 import {
-  QueryClient,
   useMutation,
   useQueryClient,
   useSuspenseQuery,
@@ -14,6 +13,10 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { useRouter } from "next/navigation";
 import { UpdateMeetingDialog } from "../components/update-meeting-dialog";
 import { useState } from "react";
+import { UpcomingState } from "../components/upcomming-state";
+import { ActiveState } from "./active-state";
+import { CancelledState } from "./Cancel-state";
+import { ProcessingState } from "./Processing-state";
 
 interface Props {
   meetingId: string;
@@ -50,6 +53,13 @@ export const MeetingIdView = ({ meetingId }: Props) => {
     if (!ok) return;
     await removeMeeting.mutateAsync({ id: meetingId });
   };
+
+  const isActive = data.status === "active";
+  const isUpcomming = data.status === "upcoming";
+  const isCompleted = data.status === "completed";
+  const isCancelled = data.status === "cancelled";
+  const processing = data.status === "processing";
+
   return (
     <>
       <RemoveConfirmation />
@@ -65,7 +75,17 @@ export const MeetingIdView = ({ meetingId }: Props) => {
           onEdit={() => setUpdateAgentDialogOpen(true)}
           onRemove={handleRemoveMeeting}
         />
-        {JSON.stringify(data, null, 2)}
+        {isCancelled && <CancelledState />}
+        {isCompleted && <div> Completed</div>}
+        {isActive && <ActiveState meetingId={meetingId} />}
+        {isUpcomming && (
+          <UpcomingState
+            meetingId={meetingId}
+            onCancelMeeting={() => {}}
+            isCancelled={false}
+          />
+        )}
+        {processing && <ProcessingState />}
       </div>
     </>
   );
