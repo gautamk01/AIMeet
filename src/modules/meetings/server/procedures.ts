@@ -35,7 +35,10 @@ export const meetingsRouter = createTRPCRouter({
     getOne: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ input, ctx }) => {
         const [existingMeeting] = await db.select({
             ...getTableColumns(meetings)
-        }).from(meetings).where(and(eq(meetings.id, input.id), eq(meetings.userId, ctx.auth.user.id)))
+            , agent: agents,
+            duration: sql<number>`EXTRACT(EPOCH FROM (ended_at - started_at))`.as("duration"),
+        }).from(meetings)
+            .innerJoin(agents, eq(meetings.agentId, agents.id)).where(and(eq(meetings.id, input.id), eq(meetings.userId, ctx.auth.user.id)))
         //Find the agent with this specific ID, but only return it if it belongs to this specific user." 
         //This prevents any user from being able to access another user's data, even if they guess a valid agent ID. 🔐
         if (!existingMeeting) {
