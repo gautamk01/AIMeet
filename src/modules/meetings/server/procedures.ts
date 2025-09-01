@@ -7,9 +7,32 @@ import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, MIN_PAGE_SIZE } from "@
 import { TRPCError } from "@trpc/server";
 import { meetingsInsertSchema, meetingsUpdateSchema } from "../schemas";
 import { MeetingStatus } from "../types";
+import { streamVideo } from "@/lib/stream-video";
+import { generateAvatarUri } from "@/lib/avatar";
 
 
 export const meetingsRouter = createTRPCRouter({
+
+    generateToken: protectedProcedure.mutation(async ({ ctx }) => {
+        await streamVideo.upsertUsers([{
+            id: ctx.auth.user.id,
+            name: ctx.auth.user.name,
+            role: "admin",
+            image: ctx.auth.user.image ?? generateAvatarUri({ seed: ctx.auth.user.name, variant: "initials" })
+        }]);
+
+        const expirationTime = Math.floor(Date.now() / 100) + 3600; // 1hr
+        const issusedAt = Math.floor(Date.now() / 1000) - 60;
+
+        const token = streamVideo.generateUserToken({
+            user_id: ctx.auth.user.id,
+            exp: expirationTime,
+            validity_in_seconds: issusedAt
+
+        })
+
+        return token
+    }),
 
     //remove Meeting Procedure 
     remove: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
@@ -36,8 +59,58 @@ export const meetingsRouter = createTRPCRouter({
         const [createdMeetings] = await db.insert(meetings).values({ ...input, userId: ctx.auth.user.id }).returning();
 
         //TODO : create stream call , upsert Stream user
+        const call = streamVideo.video.call("default", createdMeetings.id);
+        await call.create({
+            data: {
+                created_by_id: ctx.auth.user.id,
+                custom: {
+                    meetingId: createdMeetings.id,
+                    meetingName: createdMeetings.name
+                },
+                settings_override: {
+                    transcription: {
+                        language: "en",
+                        mode: "auto-on",
+                        closed_caption_mode: "auto-on"
+                    },
+                    recording: {
+                        mode: "auto-on",
+                        quality: "1080p"
+                    },
+                },
+
+
+            }
+        });
+
+
+        const [existingAgent] = await db.select().from(agents).where(eq(agents.id, createdMeetings.agentId));
+
+        if (!existingAgent) {
+            throw new TRPCError({
+                code: "NOT_FOUND",
+                message: "Agent not found"
+            })
+        }
+
+        await streamVideo.upsertUsers([
+            {
+                id: existingAgent.id,
+                name: existingAgent.name, role: "user",
+                image: generateAvatarUri({
+                    seed: existingAgent.name,
+                    variant: "botttsNeutral"
+                })
+            }
+        ])
         return createdMeetings;
     }),
+
+    //  This create procedure does three main things:
+    // DB Insert → Saves the meeting in your database.
+    // Stream Setup → Creates a corresponding video call with transcription & recording.
+    // Agent Linking → Ensures the related agent exists and is registered as a Stream user.
+
 
     //Getone Meeting Procedure
     //from this we are getting the inital values the update form will be populated with 
