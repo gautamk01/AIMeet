@@ -5,7 +5,7 @@ import {
   MeetingIdViewLoading,
 } from "@/modules/meetings/ui/views/meeting-id-view";
 import { getQueryClient, trpc } from "@/trpc/server";
-import { HydrationBoundary } from "@tanstack/react-query";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -32,7 +32,7 @@ const Page = async ({ params }: Props) => {
   );
   //Todo : Prefetch 'meeting.getTranscript'
   return (
-    <HydrationBoundary>
+    <HydrationBoundary state={dehydrate(queryClient)}>
       <Suspense fallback={<MeetingIdViewLoading />}>
         <ErrorBoundary fallback={<MeetingIdViewError />}>
           <MeetingIdView meetingId={meetingId} />

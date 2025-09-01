@@ -18,7 +18,7 @@ export const UpdateMeetingDialog = ({
 }: UpdateMeetingDialogProps) => {
   return (
     <ResponsiveDialog
-      title="Edit meeting Agent"
+      title="Edit meeting"
       description="Edit Meeting Details "
       open={open}
       onOpenChange={onOpenChange}
