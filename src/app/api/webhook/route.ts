@@ -1,5 +1,6 @@
 import db from "@/db";
 import { agents, meetings } from "@/db/schema";
+import { inngest } from "@/inngest/client";
 import { streamVideo } from "@/lib/stream-video";
 import { CallRecordingReadyEvent, CallSessionEndedEvent, CallSessionStartedEvent, CallTranscriptionReadyEvent } from "@stream-io/node-sdk";
 import { and, eq, not } from "drizzle-orm";
@@ -122,6 +123,15 @@ export async function POST(req: NextRequest) {
         }
 
         //Todo: Call inngest background job to summarize the transcript 
+
+        await inngest.send({
+            name: "meetings/processing",
+            data: {
+                meetingId: updatedMeeting.id,
+                transcriptUrl: updatedMeeting.transcriptURL
+            }
+        })
+
     } else if (eventType === "call.recording_ready") {
         const event = payload as CallRecordingReadyEvent;
         const meetingId = event.call_cid.split(":")[1];
