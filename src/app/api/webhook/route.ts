@@ -1,7 +1,7 @@
 import db from "@/db";
 import { agents, meetings } from "@/db/schema";
 import { streamVideo } from "@/lib/stream-video";
-import { CallSessionEndedEvent, CallSessionStartedEvent, CallTranscriptionReadyEvent } from "@stream-io/node-sdk";
+import { CallRecordingReadyEvent, CallSessionEndedEvent, CallSessionStartedEvent, CallTranscriptionReadyEvent } from "@stream-io/node-sdk";
 import { and, eq, not } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -122,6 +122,16 @@ export async function POST(req: NextRequest) {
         }
 
         //Todo: Call inngest background job to summarize the transcript 
+    } else if (eventType === "call.recording_ready") {
+        const event = payload as CallRecordingReadyEvent;
+        const meetingId = event.call_cid.split(":")[1];
+
+        await db
+            .update(meetings).set({ recordingURL: event.call_recording.url })
+            .where(eq(meetings.id, meetingId)).returning()
+
+
     }
+    //there is some connection with this an the procedure meeting auto-on auto-on transcription and recording
     return NextResponse.json({ status: "ok" })
 }
