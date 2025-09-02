@@ -1,7 +1,7 @@
 import db from "@/db";
 import { agents, meetings } from "@/db/schema";
 import { streamVideo } from "@/lib/stream-video";
-import { CallSessionStartedEvent } from "@stream-io/node-sdk";
+import { CallSessionEndedEvent, CallSessionStartedEvent } from "@stream-io/node-sdk";
 import { and, eq, not } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -97,6 +97,18 @@ export async function POST(req: NextRequest) {
 
         const call = streamVideo.video.call("default", meetid);
         await call.end();
+    } else if (eventType === "call.session_ended") {
+        const event = payload as CallSessionEndedEvent;
+        const meetingId = event.call.custom?.meetingId;
+
+        if (!meetingId) {
+            return NextResponse.json({ error: "Missing meetingId" }, { status: 400 });
+        }
+
+        await db.update(meetings).set({
+            status: "processing",
+            endedAt: new Date()
+        }).where(and(eq(meetings.id, meetingId), eq(meetings.status, "active")))
     }
     return NextResponse.json({ status: "ok" })
 }
