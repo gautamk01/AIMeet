@@ -1,7 +1,7 @@
 import db from "@/db";
 import { agents, meetings } from "@/db/schema";
 import { streamVideo } from "@/lib/stream-video";
-import { CallSessionEndedEvent, CallSessionStartedEvent } from "@stream-io/node-sdk";
+import { CallSessionEndedEvent, CallSessionStartedEvent, CallTranscriptionReadyEvent } from "@stream-io/node-sdk";
 import { and, eq, not } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -109,6 +109,19 @@ export async function POST(req: NextRequest) {
             status: "processing",
             endedAt: new Date()
         }).where(and(eq(meetings.id, meetingId), eq(meetings.status, "active")))
+    } else if (eventType === "call.transcription_ready") {
+        const event = payload as CallTranscriptionReadyEvent;
+        const meetingId = event.call_cid.split(":")[1];
+
+        const [updatedMeeting] = await db
+            .update(meetings).set({ transcriptURL: event.call_transcription.url })
+            .where(eq(meetings.id, meetingId)).returning()
+
+        if (!updatedMeeting) {
+            return NextResponse.json({ error: "Meeting not found" }, { status: 404 })
+        }
+
+        //Todo: Call inngest background job to summarize the transcript 
     }
     return NextResponse.json({ status: "ok" })
 }
